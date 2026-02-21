@@ -1,39 +1,101 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>MVP Download</title>
+  <title>MVP Download</title>
+
+  <style>
+    body {
+      background: #0e0e11;
+      color: #f1f1f1;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+    }
+
+    h1, h2 {
+      text-align: center;
+    }
+
+    .card {
+      background: #18181f;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(140,82,255,0.2);
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      background: #0e0e11;
+      border: 1px solid #333;
+      color: white;
+      border-radius: 8px;
+    }
+
+    button {
+      background: linear-gradient(90deg, #8c52ff, #ff4ecd);
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.85;
+    }
+
+    .track {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    hr {
+      border: 0;
+      border-top: 1px solid #333;
+      margin: 15px 0;
+    }
+  </style>
 </head>
+
 <body>
+<div class="container">
+  <h1>🎧 MVP DOWNLOAD</h1>
 
-<h1>Upload track</h1>
+  <div class="card">
+    <h2>Upload track</h2>
+    <form method="POST" enctype="multipart/form-data">
+      <input type="file" name="file" required>
+      <input type="text" name="author" placeholder="Author name" required>
+      <input type="number" step="0.01" name="price" placeholder="Price (€)" required>
+      <button type="submit">UPLOAD</button>
+    </form>
+  </div>
 
-<form method="POST" enctype="multipart/form-data">
-    <input type="file" name="file" required><br><br>
-    <input type="text" name="author" placeholder="Author name" required><br><br>
-    <input type="number" name="price" placeholder="Price (€)" required><br><br>
-    <button type="submit">Upload</button>
-</form>
+  <div class="card">
+    <h2>Available tracks</h2>
 
-<hr>
+    {% for track in tracks %}
+      <div class="track">
+        <div>
+          <b>{{ track.filename }}</b><br>
+          {{ track.author }} · €{{ track.price }}
+        </div>
+        <a href="/download/{{ track.id }}">
+          <button>Download</button>
+        </a>
+      </div>
+      <hr>
+    {% endfor %}
 
-<h2>Available tracks</h2>
-
-<ul>
-{% for track in tracks %}
-    <li>
-        <b>{{ track.name }}</b><br>
-        Author: {{ track.author }}<br>
-        Price: €{{ track.price }}<br>
-
-        {% if not track.paid %}
-            <a href="/buy/{{ loop.index0 }}">Buy license</a>
-        {% else %}
-            <a href="/download/{{ loop.index0 }}">Download</a>
-        {% endif %}
-    </li>
-    <br>
-{% endfor %}
-</ul>
-
+    {% if tracks|length == 0 %}
+      <p style="text-align:center; opacity:0.6;">No tracks uploaded yet</p>
+    {% endif %}
+  </div>
+</div>
 </body>
 </html>
