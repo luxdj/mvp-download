@@ -1,12 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for, send_from_directory
+from flask import Flask, render_template, request, redirect, send_from_directory
 import os
+import uuid
 
 app = Flask(__name__)
 
 UPLOAD_FOLDER = "uploads"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Fake baza (za MVP)
 tracks = []
 
 @app.route("/", methods=["GET", "POST"])
@@ -17,32 +17,28 @@ def index():
         price = request.form["price"]
 
         if file:
-            filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+            filename = f"{uuid.uuid4()}_{file.filename}"
+            filepath = os.path.join(UPLOAD_FOLDER, filename)
             file.save(filepath)
 
             tracks.append({
-                "name": file.filename,
+                "id": filename,
+                "filename": file.filename,
                 "author": author,
-                "price": price,
-                "paid": False
+                "price": price
             })
 
-        return redirect(url_for("index"))
+            return redirect("/success")
 
     return render_template("index.html", tracks=tracks)
 
-@app.route("/buy/<int:track_id>")
-def buy(track_id):
-    if 0 <= track_id < len(tracks):
-        tracks[track_id]["paid"] = True
-    return redirect(url_for("index"))
+@app.route("/success")
+def success():
+    return render_template("success.html")
 
-@app.route("/download/<int:track_id>")
+@app.route("/download/<track_id>")
 def download(track_id):
-    track = tracks[track_id]
-    if not track["paid"]:
-        return "License not purchased", 403
-    return send_from_directory(UPLOAD_FOLDER, track["name"], as_attachment=True)
+    return send_from_directory(UPLOAD_FOLDER, track_id, as_attachment=True)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
