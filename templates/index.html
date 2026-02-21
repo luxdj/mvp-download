@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MVP Download</title>
+</head>
+<body>
+
+<h1>Upload track</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" required><br><br>
+    <input type="text" name="author" placeholder="Author name" required><br><br>
+    <input type="number" name="price" placeholder="Price (€)" required><br><br>
+    <button type="submit">Upload</button>
+</form>
+
+<hr>
+
+<h2>Available tracks</h2>
+
+<ul>
+{% for track in tracks %}
+    <li>
+        <b>{{ track.name }}</b><br>
+        Author: {{ track.author }}<br>
+        Price: €{{ track.price }}<br>
+
+        {% if not track.paid %}
+            <a href="/buy/{{ loop.index0 }}">Buy license</a>
+        {% else %}
+            <a href="/download/{{ loop.index0 }}">Download</a>
+        {% endif %}
+    </li>
+    <br>
+{% endfor %}
+</ul>
+
+</body>
+</html>
